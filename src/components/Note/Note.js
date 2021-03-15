@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useCallback} from 'react'
 import './styles.css'
 
 export default function Note(props) {
@@ -7,15 +7,28 @@ export default function Note(props) {
 
     const [newTitle, setNewTitle] = useState(title.title)
     const [isEdit, setIsEdit] = useState(false)
-    const [done, setDone] = useState(false)
     
     
-  
+    
+    const callbackTitle = useCallback((e)=>{
+        setNewTitle(e.target.value)
+    })
 
-    const isDone =  <input type='checkbox' checked={title.check ? true : false}  onChange={() => mark(index)}/> 
-    console.log(title.check);
+    const callbackCheckbox = useCallback(()=>{
+        mark(index)
+    },[index])
+
+    
+      
     const onclose = ()=>{
         edit(newTitle, index)
+        setIsEdit(!isEdit)
+    }
+
+    const deleteHandler =()=>{
+        remove(index)
+    }
+    const editHandler =()=>{
         setIsEdit(!isEdit)
     }
   
@@ -23,12 +36,12 @@ export default function Note(props) {
     return (
         <div>
             <h1> {title.title}</h1>
-            <button onClick={() => remove(index)}>X</button>
-            <button onClick={() => setIsEdit(!isEdit)}> {isEdit ? 'cancel' : 'edit'}</button>
+            <button onClick={deleteHandler}>X</button>
+            <button onClick={editHandler}> {isEdit ? 'cancel' : 'edit'}</button>
             <div> 
-                {isDone}
+                {<input type='checkbox' checked={title.check ? true : false}  onChange={callbackCheckbox}/>}
                 
-                {isEdit && <input onChange={e => setNewTitle(e.target.value) } value={newTitle}/> }
+                {isEdit && <input onChange={callbackTitle } value={newTitle}/> }
                 
                 <button className={isEdit ? "show" : "hide"} onClick={onclose }> confirm</button> 
                 <h6> {title.time}</h6>

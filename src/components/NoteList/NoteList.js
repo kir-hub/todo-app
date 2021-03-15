@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import NoteInput from '../NoteInput/NoteInput'
+import Input from '../NoteInput/NoteInput'
 import Note from '../Note/Note'
 
 // пользователь может добавлять заметки
@@ -46,7 +46,7 @@ export default function NoteList(props) {
 
 
 
-    const handleSubmit =()=>{
+    const handleSubmit =(value)=>{
         if (!value) return;
         addTodo(value)
         setValue('')
@@ -77,7 +77,7 @@ export default function NoteList(props) {
 
     
 
-    const addTodo = () =>{
+    const addTodo = (value) =>{
         const date = new Date
         const newTodos = [{ check: false, title: value, time: date.getHours()+ ':' + date.getMinutes()}, ...todos]
         setTodos(newTodos)
@@ -92,17 +92,20 @@ export default function NoteList(props) {
 
     }
 
-    const listed = todos.map((todos, index) => (
-        <li key={index}> <Note editorHandler={editorHandler} mark={mark} check={check} title={todos} index={index} remove={removeTodo} edit={editTodo}/> </li>
-    ))
+    const onAdd = ()=>{
+
+    }
+
+    
 
     return (
         <div>
-            <input onChange={e => setValue(e.target.value)} value={value} palceholder='title'/>
-
-            <button onClick={handleSubmit}> AddTodo</button>
+            <Input  onAdd={handleSubmit}/>
+            
             <ul> 
-                {listed}
+                {todos.map((todos, index) => (
+        <li key={index}> <Note editorHandler={editorHandler} mark={mark} check={check} title={todos} index={index} remove={removeTodo} edit={editTodo}/> </li>
+    ))}
             </ul>
         </div>
     )

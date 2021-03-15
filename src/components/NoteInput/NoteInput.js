@@ -1,20 +1,25 @@
-import React, {useState} from 'react'
+import React, {useState, useCallback} from 'react'
 import Note from '../Note/Note'
 
-export default function NoteInput(props) {
+export default function Input(props) {
+    const {onAdd} = props
 
     const [text, setText] = useState('')
-    const noteItem = <Note title={text} />
 
-   const textHandler = ()=>{
-       setText(text)
-   }
+    const textHandler = ()=>{
+        setText(text)
+        onAdd(text)
+        setText('')
+    }
+    const onChangeHandler = useCallback((e)=>{
+        setText(e.target.value)
+    })
 
     return (
         <div>
-            <input onChange={e => setText(e.target.value)} value={text} palceholder='title'/>
+            <input onChange={onChangeHandler} value={text} palceholder='title'/>
 
-            <button onClick={textHandler}> Add</button>
+            <button onClick={textHandler}> Add todo</button>
         </div>
     )
 }
