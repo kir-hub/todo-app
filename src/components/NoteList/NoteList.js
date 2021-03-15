@@ -8,17 +8,42 @@ import Note from '../Note/Note'
 // данные сохраняются в локальное хранилище
 // рядом с заметкой появляетя дата создания
 
+const getTodos =()=>{
+    const data = localStorage.getItem('todos') 
+    if(!data){
+        return []
+    }
+    return JSON.parse(data)
+
+}
+
 export default function NoteList(props) {
 
     const [value, setValue] = useState('')
-    const [todos, setTodos] = useState([{ title: '', time: '' }])
+    const [todos, setTodos] = useState([])
+    const [check, setCheck] = useState(false)
+    const [editorHandler, setEditorHandler] = useState(true)
+
+
 
     useEffect(()=>{
-        const data = localStorage.getItem('1')
-        setTodos(()=> JSON.parse(data))
+        const newTodos = getTodos()
+        setTodos(newTodos)
         console.log(todos);
         
     }, [])
+
+    useEffect(()=>{
+        if(todos.length > 0){
+            localStorage.setItem('todos', JSON.stringify(todos))
+            console.log(todos);
+        }
+        if(todos.length == 0){
+            localStorage.clear()
+        }
+
+    },[todos])
+
 
 
     const handleSubmit =()=>{
@@ -28,30 +53,47 @@ export default function NoteList(props) {
         
     }
 
-    const editTodo =(title, index)=>{
+    
+
+    const editTodo =(title, index,)=>{
         const newTodos = [...todos]
-        newTodos.splice(index,1, {title: title})
+        const date = new Date
+
+        newTodos.splice(index,1, {title: title, time: date.getHours()+ ':' + date.getMinutes()})
+        setEditorHandler(!editorHandler)
         setTodos(newTodos)
-        localStorage.setItem('1', JSON.stringify(todos))
 
     }
+
+    const mark = (index)=>{
+        const newTodos =[...todos]
+        setCheck(!check)
+        newTodos[index].check = check
+
+        setTodos(newTodos)
+
+
+    }
+
+    
+
     const addTodo = () =>{
         const date = new Date
-        const newTodos = [...todos, { title: value, time: date.getHours()+ ':' + date.getMinutes()}]
+        const newTodos = [{ check: false, title: value, time: date.getHours()+ ':' + date.getMinutes()}, ...todos]
         setTodos(newTodos)
-        localStorage.setItem('1', JSON.stringify(todos))
+
+        
     }
 
     const removeTodo = index =>{
         const newTodos = [...todos]
         newTodos.splice(index,1)
         setTodos(newTodos)
-        localStorage.setItem('1', JSON.stringify(todos))
 
     }
 
     const listed = todos.map((todos, index) => (
-        <li key={index}> <Note  title={todos} index={index} remove={removeTodo} edit={editTodo}/> </li>
+        <li key={index}> <Note editorHandler={editorHandler} mark={mark} check={check} title={todos} index={index} remove={removeTodo} edit={editTodo}/> </li>
     ))
 
     return (
